@@ -1,10 +1,10 @@
-import store from "../store/meetingStore.js";
+import meetings from "../store/meetingStore.js";
 import { randomUUID } from "crypto";
 
 // Create meeting
 export const createMeeting = (req, res) => {
     const meetingId = randomUUID();
-    store.set(meetingId, {
+    meetings.set(meetingId, {
         participants: new Set(),
         active: true,
     });
@@ -14,7 +14,7 @@ export const createMeeting = (req, res) => {
 // Join meeting
 export const joinMeeting = (req, res) => {
     const { meetingId, userId } = req.body;
-    const meeting = store.get(meetingId);
+    const meeting = meetings.get(meetingId);
     if (!meeting || !meeting.active) {
         return res.status(400).json({ error: "Meeting not active" });
     }
@@ -25,7 +25,7 @@ export const joinMeeting = (req, res) => {
 // Leave meeting
 export const leaveMeeting = (req, res) => {
     const { meetingId, userId } = req.body;
-    const meeting = store.get(meetingId);
+    const meeting = meetings.get(meetingId);
     meeting?.participants.delete(userId);
     res.json({ left: true });
 };
@@ -33,7 +33,7 @@ export const leaveMeeting = (req, res) => {
 // End meeting
 export const endMeeting = (req, res) => {
     const { meetingId } = req.body;
-    const meeting = store.get(meetingId);
+    const meeting = meetings.get(meetingId);
     if (meeting) meeting.active = false;
     res.json({ ended: true });
 };

@@ -1,2 +1,2 @@
 const users = new Map();
-module.exports = users;
+export default users;

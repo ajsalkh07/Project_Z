@@ -1,2 +1,2 @@
 const meetings = new Map();
-module.exports = meetings;
+export default meetings;
