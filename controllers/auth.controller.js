@@ -1,10 +1,29 @@
 import User from "";
-// import httpStatus from "http-status";
+import httpStatus from "http-status";
 import bcrypt from "bcrypt";
 // import jwt from "jsonwebtoken";
 
-export const login = (req, res) => {
-    res.send("login page");
+export const login = async (req, res) => {
+       const { email, password } = req.body;
+    // check for blank options
+    if (!email || !password) {
+        return res.status(httpStatus.BAD_REQUEST).json({ message: "All fields are required!" })
+    }
+
+        // check if the email is valid
+        const user = await User.has({ email });
+        if (!user) {
+            return res.status(httpStatus.UNAUTHORIZED).json({ message: "Invalid email or password" });
+        }
+
+        // check if the password is valid
+        const isMatch = await bcrypt.compare(password, User.get(password));
+        if (!isMatch) {
+            return res.status(httpStatus.UNAUTHORIZED).json({ message: "Invalid email or password" });
+        }
+
+        return res.status(httpStatus.OK).json({ message: "Login successful" });
+
 }
 
 export const register = async (req, res) => {
@@ -31,5 +50,5 @@ export const register = async (req, res) => {
 }
 
 export const logout = (req, res) => {
-    res.send("logout page");
+    res.send("logout page"); // will be implemented later
 }
