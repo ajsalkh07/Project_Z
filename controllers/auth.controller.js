@@ -55,29 +55,53 @@ export const login = async (req, res) => {
         return res.status(httpStatus.BAD_REQUEST).json({ message: "All fields are required" });
 
     try {
+        // Find user by email
         const user = await User.findOne({ email });
-        if (!user) return res.status(401).json({ message: "Invalid email or password" });
+        if (!user) return res.status(httpStatus.UNAUTHORIZED).json({ message: "Invalid email or password" });
 
+        // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch)
-            return res.status(401).json({ message: "Invalid email or password" });
+            return res.status(httpStatus.UNAUTHORIZED).json({ message: "Invalid email or password" });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-            expiresIn: "7d",
+        // JWT token
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
-        res.json({
-            message: "Login successful",
-            token,
-            user: { id: user._id, username: user.username, email: user.email },
+        res.status(httpStatus.OK).json({
+            success: true, message: "Login successfully",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
         });
     } catch (error) {
-        console.error("Login error:", error.message);
-        res.status(500).json({ message: error.message });
+        console.log("error in login controller");
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
 };
 
-// LOGOUT
+// logout
 export const logout = (req, res) => {
-    res.json({ message: "Logout successful" });
+    try {
+        // Clear the cookie for logout
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
+        res.status(httpStatus.OK).json({ message: "Logout successfully" })
+    } catch (error) {
+        console.log("error in logout controller");
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    }
 };
