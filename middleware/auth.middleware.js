@@ -2,6 +2,7 @@ import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import httpStatus from "http-status";
 
+// Authentication middleware
 const authMiddleware = async (req, res, next) => {
   try {
         // Verify JWT token from cookies

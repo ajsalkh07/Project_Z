@@ -4,6 +4,7 @@ import {createMeeting, joinMeeting, leaveMeeting } from "../controllers/meeting.
 
 const router = express.Router();
 
+// Meeting routes
 router.post("/create", authMiddleware, createMeeting);
 router.post("/join/:meetingId", authMiddleware, joinMeeting);
 router.post("/leave/:meetingId", authMiddleware, leaveMeeting);

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Meeting schema
 const meetingSchema = new mongoose.Schema({
   title: { type: String, required: true },
   host: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },

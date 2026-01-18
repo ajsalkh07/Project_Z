@@ -24,7 +24,7 @@ export const register = async (req, res) => {
 
         // JWT token
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
+        // Set cookie
         res.cookie('token', token, { // Set cookie
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -66,7 +66,7 @@ export const login = async (req, res) => {
 
         // JWT token
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
+        // Set cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -74,6 +74,7 @@ export const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
+        // Respond with user data
         res.status(httpStatus.OK).json({
             success: true, message: "Login successfully",
             user: {
@@ -98,7 +99,7 @@ export const logout = (req, res) => {
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
-
+        // Respond successfully
         res.status(httpStatus.OK).json({ message: "Logout successfully" })
     } catch (error) {
         console.log("error in logout controller");
